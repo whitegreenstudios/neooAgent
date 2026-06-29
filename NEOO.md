@@ -60,6 +60,24 @@ The **reward source is pluggable** (`reward_fn`) and must be the repo-level test
 never the agent grading itself. Until #65 is wired, episodes export **unscored**
 (`outcome.scored=False`) so the data is still collected and can be labeled later.
 
+### 4. Wire the verifiable reward (the #65 checker)
+The reward must be the repo-level test verdict, not the agent's opinion. `neoo/reward.py` is the
+thin, dependency-free seam: it extracts the agent's **submission** (patch) and scores it with an
+**injected** checker (`neurahash.repo_check.RepoTestExec` from the NeuraHash side), so neooAgent
+never has to depend on neurahash:
+
+```python
+from neurahash.repo_check import from_spec, SubprocessExecutor   # NeuraHash side (#65)
+from minisweagent.neoo import run_episode, EpisodeExporter, submission_reward_fn
+
+checker = from_spec(task_spec, SubprocessExecutor(repo_dir))     # rebuild the pinned env
+run_episode(agent, issue, task_id=instance_id,
+            reward_fn=submission_reward_fn(checker),             # patch -> tests pass -> 1.0/0.0
+            exporter=EpisodeExporter("episodes.jsonl"))
+```
+
+No checker injected (`reward_fn=None`) → episodes stay unscored until #65's executor is live.
+
 ## The flywheel
 
 ```
