@@ -1,0 +1,16 @@
+neooAgent
+=========
+
+neooAgent is a fork of mini-swe-agent (https://github.com/SWE-agent/mini-swe-agent),
+created by the SWE-agent authors (Princeton/Stanford) and distributed under the MIT License.
+
+neooAgent is maintained by NeuraHash / whitegreenstudios. It RETAINS the upstream MIT License and
+copyright notice (see LICENSE.md) as required.
+
+NeuraHash modifications add the `neoo` integration layer (src/minisweagent/neoo/) on top of the
+upstream agent, without modifying the upstream agent loop:
+  - neoo/trajectory.py — export agent episodes as verifiable-reward RL training data
+  - neoo/model.py      — point the agent at NeuraHash's served model (e.g. GLM-5.2)
+
+Upstream improvements are tracked via the `upstream` git remote
+(https://github.com/SWE-agent/mini-swe-agent) and merged periodically.
