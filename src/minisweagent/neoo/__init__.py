@@ -8,6 +8,7 @@ Adds, without touching the upstream agent loop:
 See NEOO.md. `neoo_model` lives in .model and is imported explicitly (it pulls in litellm), so this
 package import stays cheap and dependency-light.
 """
+from minisweagent.neoo.reward import extract_submission, submission_reward_fn
 from minisweagent.neoo.run_episode import build_agent, run_episode, solve
 from minisweagent.neoo.trajectory import (
     SCHEMA,
@@ -26,4 +27,6 @@ __all__ = [
     "run_episode",
     "build_agent",
     "solve",
+    "submission_reward_fn",
+    "extract_submission",
 ]
