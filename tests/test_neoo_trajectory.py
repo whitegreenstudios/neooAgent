@@ -73,3 +73,11 @@ def test_accepts_raw_messages_list():
     rec = tr.build_episode(_synthetic_traj()["messages"], reward=1.0, task_id="t1")
     assert rec["n_turns"] == 5 and rec["outcome"]["reward"] == 1.0
     assert rec["outcome"]["exit_status"] == "Submitted"     # read from the trailing exit message
+
+
+def test_unscored_episode_when_reward_none():
+    rec = tr.build_episode(_synthetic_traj(), reward=None, task_id="t1")
+    assert rec["outcome"]["reward"] is None                 # unscored until the #65 checker is wired
+    assert rec["outcome"]["scored"] is False
+    scored = tr.build_episode(_synthetic_traj(), reward=1.0, task_id="t1")
+    assert scored["outcome"]["scored"] is True

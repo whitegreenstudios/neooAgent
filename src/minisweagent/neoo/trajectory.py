@@ -50,7 +50,8 @@ def build_episode(data, *, reward, task_id, model_id=""):
     """Normalize a neooAgent run into a content-addressed `neoo-episode-1` record.
 
     `data`     — DefaultAgent.serialize() dict or a raw messages list
-    `reward`   — the terminal verifiable reward (the #65 repo-test verdict), e.g. 1.0/0.0
+    `reward`   — the terminal verifiable reward (the #65 repo-test verdict), e.g. 1.0/0.0, or
+                 None for an UNSCORED episode (outcome.scored=False) until the checker is wired
     `task_id`  — provenance: which SWE instance this episode is for (dedup + decontam key)
     `model_id` — which model produced it
     """
@@ -69,7 +70,8 @@ def build_episode(data, *, reward, task_id, model_id=""):
         "outcome": {
             "exit_status": info.get("exit_status", last_extra.get("exit_status", "")),
             "submission": info.get("submission", last_extra.get("submission", "")),
-            "reward": float(reward),
+            "reward": (float(reward) if reward is not None else None),
+            "scored": reward is not None,
         },
         "meta": {
             "cost": stats.get("instance_cost", 0.0),
