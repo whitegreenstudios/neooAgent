@@ -40,6 +40,26 @@ Each line is one episode: `{schema, episode_id (sha256), task_id, model_id, n_tu
 outcome{exit_status, submission, reward}, meta}`. Content-addressed for dedup + provenance, the same
 discipline as NeuraHash's `data_collect` (#62).
 
+### 3. One command: solve → labeled episode
+`src/minisweagent/neoo/run_episode.py` ties it together — build a served-model agent, solve a task,
+and emit a labeled episode in one call:
+
+```bash
+python -m minisweagent.neoo.run_episode --task "Fix the bug in foo()" --task-id repo__issue-1
+```
+
+```python
+from minisweagent.neoo import solve, run_episode
+# high-level (live): served model + agent + export
+solve("Fix the bug in foo()", task_id="repo__issue-1", reward_fn=repo_test_checker)
+# or orchestrate an already-built agent:
+run_episode(agent, task, task_id=instance_id, reward_fn=repo_test_checker, exporter=exporter)
+```
+
+The **reward source is pluggable** (`reward_fn`) and must be the repo-level test checker (#65) —
+never the agent grading itself. Until #65 is wired, episodes export **unscored**
+(`outcome.scored=False`) so the data is still collected and can be labeled later.
+
 ## The flywheel
 
 ```
